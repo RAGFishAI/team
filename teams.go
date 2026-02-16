@@ -519,7 +519,7 @@ func (team *Teams) UpdateMyUser(userupdate TeamCreate, userid int, tenantid stri
 		return autherr
 	}
 
-	if userupdate.FirstName == "" || userupdate.Email == "" || userupdate.Username == "" || userupdate.MobileNo == "" {
+	if userupdate.FirstName == "" || userupdate.Email == "" || userupdate.MobileNo == "" {
 		return ErrorValidation
 	}
 
@@ -648,4 +648,25 @@ func (team *Teams) UpdateUserDetails(userdata map[string]interface{}, userid int
 		return err
 	}
 	return nil
+}
+func (team *Teams) ChangeYourEmail(email string, userid int, tenantid string) (success bool, err error) {
+
+	if autherr := AuthandPermission(team); autherr != nil {
+		return false, autherr
+	}
+
+	var tbluser TblUser
+	tbluser.Id = userid
+	tbluser.Email = email
+	tbluser.ModifiedOn, _ = time.Parse("2006-01-02 15:04:05", time.Now().UTC().Format("2006-01-02 15:04:05"))
+	tbluser.ModifiedBy = 1
+
+	cerr := tm.ChangeEmailById(&tbluser, team.DB, tenantid)
+
+	if cerr != nil {
+		return false, cerr
+	}
+
+	return true, nil
+
 }

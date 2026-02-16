@@ -712,3 +712,12 @@ func (t TeamModel) UpdateUserDetails(userdata map[string]interface{}, userid int
 
 	return nil
 }
+func (t TeamModel) ChangeEmailById(user *TblUser, DB *gorm.DB, tenantid string) error {
+ 
+    if err := DB.Table("tbl_users").Where("id=? and tenant_id=?", user.Id, tenantid).Updates(TblUser{Email: user.Email, ModifiedOn: user.ModifiedOn, ModifiedBy: user.ModifiedBy}).Error; err != nil {
+ 
+        return err
+    }
+    return nil
+ 
+}
